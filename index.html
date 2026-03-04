@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-E9SC3T5L16"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-E9SC3T5L16');
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calcolatore BMI Pro</title>
@@ -20,79 +11,114 @@
 <style>
 * { box-sizing: border-box; margin:0; padding:0; font-family: 'Segoe UI', sans-serif; }
 
-/* BODY CENTRATO */
+/* BODY: FLEX PER SIDEBAR + CALCOLATORE */
 body {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
     background-color: #f4f5cb;
-    overflow: hidden;
+    margin:0;
 }
 
 /* VIDEO SFONDO */
 #bgVideo {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-    opacity: 0.2;      /* abbassa trasparenza per vedere meglio il contenitore */
-    filter: blur(1px); /* blur leggero */
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:-1;
+    opacity:0.2;
+    filter: blur(1px);
 }
 
-/* CONTENITORE PRINCIPALE */
+/* SIDEBAR AFFILIAZIONE */
+#productSidebar {
+    width: 200px;
+    max-height: 500px;
+    margin-right: 20px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    overflow-y: auto;
+}
+
+#productSidebar h3 {
+    color:#FF8000;
+    text-align:center;
+    margin-bottom:10px;
+}
+
+/* LISTA PRODOTTI */
+.productList {
+    display:flex;
+    flex-direction: column;
+}
+
+.productItem {
+    display:block;
+    padding:10px;
+    margin-bottom:10px;
+    background:#ff6b00;
+    color:white;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:14px;
+    transition: background 0.3s;
+}
+
+.productItem:hover { background:#e65c00; }
+
+/* CONTENITORE CALCOLATORE */
 .app-container {
     position: relative;
-    z-index: 1;
+    z-index:1;
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(12px);
-    border-radius: 25px;
-    width: 100%;
-    max-width: 450px;
-    padding: 30px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
-    text-align: center;
+    border-radius:25px;
+    width:100%;
+    max-width:450px;
+    padding:30px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.25);
+    text-align:center;
 }
 
 /* TITOLI */
-h1 {
-    margin-bottom: 25px;
-    color: #FF8000;
-    font-size: 28px;
-}
+h1 { margin-bottom:25px; color:#FF8000; font-size:28px; }
 
 /* INPUT E SELECT */
 input, select {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    transition: 0.3s;
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:12px;
+    border:1px solid #ccc;
+    font-size:16px;
+    transition:0.3s;
 }
 
 input:focus, select:focus {
-    border-color: #ff6b00;
-    outline: none;
-    box-shadow: 0 0 8px rgba(255,107,0,0.5);
+    border-color:#ff6b00;
+    outline:none;
+    box-shadow:0 0 8px rgba(255,107,0,0.5);
 }
 
 /* PULSANTI */
 button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
     border:none;
-    border-radius: 12px;
+    border-radius:12px;
     background:#ff6b00;
     color:white;
     font-size:18px;
     cursor:pointer;
-    transition: 0.3s;
+    transition:0.3s;
 }
 
 button:hover { background:#e65c00; }
@@ -116,51 +142,50 @@ button:hover { background:#e65c00; }
 .highlight { font-weight:bold; color:#FF8000; }
 
 /* GRAFICI */
-canvas {
-    margin-top:20px;
-    max-height:0;
-    opacity:0;
-    transition: max-height 1s ease, opacity 1s ease;
-}
-
+canvas { margin-top:20px; max-height:0; opacity:0; transition: max-height 1s ease, opacity 1s ease; }
 canvas.show-chart { max-height:400px; opacity:1; }
-.history-chart {
-    margin-top:20px;
-    max-height:0;
-    opacity:0;
-    transition: max-height 1s ease, opacity 1s ease;
-}
+.history-chart { margin-top:20px; max-height:0; opacity:0; transition: max-height 1s ease, opacity 1s ease; }
 .history-chart.show-history { max-height:300px; opacity:1; }
 
 /* POPUP INFO BMI */
 #bmiInfo {
     display:none;
     position: fixed;
-    top:50%;
-    left:50%;
-    transform: translate(-50%, -50%);
+    top:50%; left:50%;
+    transform: translate(-50%,-50%);
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(10px);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    z-index: 10;
-    max-width: 400px;
-    text-align: left;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    z-index:10;
+    max-width:400px;
+    text-align:left;
 }
-
 #bmiInfo.show { display:block; animation: fadeIn 0.5s ease forwards; }
 #bmiInfo h2 { color:#FF8000; margin-bottom:15px; }
 #bmiInfo p { margin-bottom:10px; }
 #bmiInfo button { margin-top:15px; background:#ff6b00; color:white; }
 
-@keyframes fadeIn {
-    from { opacity:0; transform: translateY(-20px);}
-    to { opacity:1; transform: translateY(0);}
+@keyframes fadeIn { from {opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
+
+/* DONAZIONE */
+.donateBtn {
+    display:inline-block;
+    width:100%;
+    max-width:200px;
+    padding:12px;
+    background:#ff6b00;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    border-radius:12px;
+    text-decoration:none;
+    transition:0.3s;
+    margin-top:20px;
 }
 
-/* DONAZIONE REVOLUT */
-a img:hover { transform: scale(1.05); transition: transform 0.3s; }
+.donateBtn:hover { background:#e65c00; }
 
 </style>
 </head>
@@ -172,7 +197,20 @@ a img:hover { transform: scale(1.05); transition: transform 0.3s; }
     Il tuo browser non supporta i video HTML5.
 </video>
 
-<!-- CONTENITORE -->
+<!-- SIDEBAR AFFILIAZIONE -->
+<div id="productSidebar">
+    <h3>Prodotti Consigliati</h3>
+    <div class="productList">
+        <a href="https://amzn.to/4udHiYe" target="_blank" class="productItem">
+            Bilancia Smart Eufy – 29,99€
+        </a>
+        <a href="https://amzn.to/4rajwJE" target="_blank" class="productItem">
+            Fitness Tracker Xiaomi – 39,99€
+        </a>
+    </div>
+</div>
+
+<!-- CONTENITORE CALCOLATORE -->
 <div class="app-container">
     <h1>Calcolatore BMI Pro</h1>
 
@@ -192,16 +230,8 @@ a img:hover { transform: scale(1.05); transition: transform 0.3s; }
     <canvas id="bmiChart" width="300" height="300"></canvas>
     <canvas id="historyChart" class="history-chart" width="400" height="200"></canvas>
 
-   <!-- BLOCCO DONAZIONE REVOLUT ELEGANTE -->
-<!-- BLOCCO DONAZIONE COME PULSANTE -->
-<div style="margin-top:25px; text-align:center;">
-    <a href="https://revolut.me/fraaaaa05" target="_blank" 
-       style="display:inline-block; width:100%; max-width:200px; padding:12px; 
-              background:#ff6b00; color:white; font-size:18px; font-weight:bold; 
-              border-radius:12px; text-decoration:none; transition:0.3s;">
-        Donami
-    </a>
-</div>
+    <!-- PULSANTE DONAZIONE -->
+    <a href="https://revolut.me/fraaaaa05" target="_blank" class="donateBtn">Donami</a>
 </div>
 
 <!-- POPUP INFO BMI -->
@@ -215,10 +245,9 @@ a img:hover { transform: scale(1.05); transition: transform 0.3s; }
 </div>
 
 <script>
+// SCRIPT CALCOLO BMI (uguale al tuo)
 let chart, historyChart;
 let bmiHistory = [];
-
-// Velocità video
 const video = document.getElementById('bgVideo');
 video.playbackRate = 1.5;
 
@@ -227,36 +256,23 @@ function calcolaBMI() {
     const sesso = document.getElementById('sesso').value;
     const altezzaM = parseFloat(document.getElementById('altezza').value)/100;
     const peso = parseFloat(document.getElementById('peso').value);
-
     if (!eta || !altezzaM || !peso) { alert("Inserisci tutti i dati!"); return; }
 
     const bmi = (peso / (altezzaM*altezzaM)).toFixed(1);
-
-    let massaGrassa;
-    if (sesso==='male') massaGrassa = ((1.20*bmi)+(0.23*eta)-16.2).toFixed(1);
-    else massaGrassa = ((1.20*bmi)+(0.23*eta)-5.4).toFixed(1);
+    let massaGrassa = sesso==='male' ? ((1.20*bmi)+(0.23*eta)-16.2).toFixed(1) : ((1.20*bmi)+(0.23*eta)-5.4).toFixed(1);
     const massaMagra = (peso - massaGrassa).toFixed(1);
-
     const pesoIdeale = (22*altezzaM*altezzaM).toFixed(1);
     const chiliDaPerdere = (peso-pesoIdeale).toFixed(1);
 
-    let categoria='', colore='';
-    if(bmi<18.5){categoria='Sottopeso'; colore='#74b9ff';}
-    else if(bmi<25){categoria='Normopeso'; colore='#55efc4';}
-    else if(bmi<30){categoria='Sovrappeso'; colore='#ffeaa7';}
-    else{categoria='Obesità'; colore='#fab1a0';}
-
-    let consigli='';
-    if(bmi<18.5) consigli='Mangia più calorie e proteine, attività fisica moderata';
-    else if(bmi<25) consigli='Mantieni il peso e attività fisica regolare';
-    else if(bmi<30) consigli='Riduci calorie, aumenta attività cardio e forza';
-    else consigli='Consulta un professionista, dieta e attività fisica costante';
+    let categoria='', colore='', consigli='';
+    if(bmi<18.5){categoria='Sottopeso'; colore='#74b9ff'; consigli='Mangia più calorie e proteine, attività fisica moderata';}
+    else if(bmi<25){categoria='Normopeso'; colore='#55efc4'; consigli='Mantieni il peso e attività fisica regolare';}
+    else if(bmi<30){categoria='Sovrappeso'; colore='#ffeaa7'; consigli='Riduci calorie, aumenta attività cardio e forza';}
+    else{categoria='Obesità'; colore='#fab1a0'; consigli='Consulta un professionista, dieta e attività fisica costante';}
 
     const risultato = document.getElementById('risultato');
     animateValue(risultato, peso, pesoIdeale, bmi, massaGrassa, massaMagra, chiliDaPerdere, categoria, consigli);
-
-    const oggi = new Date().toLocaleTimeString();
-    bmiHistory.push({data:oggi, bmi:parseFloat(bmi)});
+    bmiHistory.push({data:new Date().toLocaleTimeString(), bmi:parseFloat(bmi)});
 
     const canvas = document.getElementById('bmiChart');
     if(!canvas.classList.contains('show-chart')) canvas.classList.add('show-chart');
@@ -267,25 +283,20 @@ function calcolaBMI() {
     creaHistoryChart();
 }
 
-function animateValue(container, peso, pesoIdeale, bmi, massaG, massaM, chili, categoria, consigli) {
+function animateValue(container, peso, pesoIdeale, bmi, massaG, massaM, chili, categoria, consigli){
     container.classList.add('show');
-    container.innerHTML = '';
-    let steps = 50;
-    let i=0;
-    let interval = setInterval(()=>{
+    container.innerHTML='';
+    let steps=50, i=0;
+    let interval=setInterval(()=>{
         i++;
         let perc = i/steps;
-        let bmiStep = (bmi*perc).toFixed(1);
-        let massaGStep = (massaG*perc).toFixed(1);
-        let massaMStep = (massaM*perc).toFixed(1);
-        let chiliStep = (chili*perc).toFixed(1);
-        container.innerHTML = `
-            <p>BMI: <span class="highlight">${bmiStep}</span></p>
+        container.innerHTML=`
+            <p>BMI: <span class="highlight">${(bmi*perc).toFixed(1)}</span></p>
             <p>Categoria: <span class="highlight">${categoria}</span></p>
-            <p>Massa grassa stimata: <span class="highlight">${massaGStep} kg</span></p>
-            <p>Massa magra stimata: <span class="highlight">${massaMStep} kg</span></p>
+            <p>Massa grassa stimata: <span class="highlight">${(massaG*perc).toFixed(1)} kg</span></p>
+            <p>Massa magra stimata: <span class="highlight">${(massaM*perc).toFixed(1)} kg</span></p>
             <p>Peso forma (BMI 22): <span class="highlight">${pesoIdeale} kg</span></p>
-            <p>Chili da perdere: <span class="highlight">${chiliStep>0?chiliStep:0} kg</span></p>
+            <p>Chili da perdere: <span class="highlight">${(chili*perc>0? (chili*perc).toFixed(1) : 0)} kg</span></p>
             <p>Consigli: <span class="highlight">${consigli}</span></p>
         `;
         if(i>=steps) clearInterval(interval);
@@ -293,9 +304,9 @@ function animateValue(container, peso, pesoIdeale, bmi, massaG, massaM, chili, c
 }
 
 function creaDoughnutChart(bmi,colore){
-    const ctx = document.getElementById('bmiChart').getContext('2d');
+    const ctx=document.getElementById('bmiChart').getContext('2d');
     if(chart) chart.destroy();
-    chart = new Chart(ctx,{
+    chart=new Chart(ctx,{
         type:'doughnut',
         data:{
             labels:['BMI Attuale','Normale','Sovrappeso','Obeso'],
@@ -311,13 +322,13 @@ function creaDoughnutChart(bmi,colore){
 }
 
 function creaHistoryChart(){
-    const ctx = document.getElementById('historyChart').getContext('2d');
+    const ctx=document.getElementById('historyChart').getContext('2d');
     if(historyChart) historyChart.destroy();
-    const labels = bmiHistory.map(e=>e.data);
-    const data = bmiHistory.map(e=>e.bmi);
-    historyChart = new Chart(ctx,{
+    const labels=bmiHistory.map(e=>e.data);
+    const data=bmiHistory.map(e=>e.bmi);
+    historyChart=new Chart(ctx,{
         type:'line',
-        data:{labels, datasets:[{label:'BMI Storico',data,fill:false,borderColor:'#FF8000',tension:0.2}]},
+        data:{labels,datasets:[{label:'BMI Storico',data,fill:false,borderColor:'#FF8000',tension:0.2}]},
         options:{plugins:{legend:{display:true}},scales:{y:{min:10,max:40}}}
     });
 }
@@ -326,12 +337,11 @@ function resetTutto(){
     document.getElementById('eta').value='';
     document.getElementById('altezza').value='';
     document.getElementById('peso').value='';
-    const risultato = document.getElementById('risultato');
-    risultato.classList.remove('show');
-    risultato.innerHTML='';
-    const canvas = document.getElementById('bmiChart');
+    const risultato=document.getElementById('risultato');
+    risultato.classList.remove('show'); risultato.innerHTML='';
+    const canvas=document.getElementById('bmiChart');
     canvas.classList.remove('show-chart');
-    const histCanvas = document.getElementById('historyChart');
+    const histCanvas=document.getElementById('historyChart');
     histCanvas.classList.remove('show-history');
     if(chart) chart.destroy();
     if(historyChart) historyChart.destroy();
