@@ -9,136 +9,105 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-* { box-sizing: border-box; margin:0; padding:0; font-family: 'Segoe UI', sans-serif; }
+* { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
 
-/* BODY: FLEX PER SIDEBAR + CALCOLATORE */
+/* BODY E BACKGROUND */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    background-color: #f4f5cb;
-    margin:0;
+    height:100vh;
+    width:100vw;
+    background-color:#f4f5cb;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
 }
-
-/* VIDEO SFONDO */
 #bgVideo {
     position: fixed;
     top:0; left:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
+    width:100%; height:100%;
+    object-fit: cover;
     z-index:-1;
     opacity:0.2;
     filter: blur(1px);
 }
 
-/* SIDEBAR AFFILIAZIONE */
-#productSidebar {
-    width: 200px;
-    max-height: 500px;
-    margin-right: 20px;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    overflow-y: auto;
-}
-
-#productSidebar h3 {
-    color:#FF8000;
-    text-align:center;
-    margin-bottom:10px;
-}
-
-/* LISTA PRODOTTI */
-.productList {
+/* CONTAINER PRINCIPALE: DUE COLONNE */
+.main-container {
     display:flex;
-    flex-direction: column;
+    gap:20px;
+    max-width:1000px;
+    width:90%;
+    height:auto;
 }
 
-.productItem {
+/* COLONNA PRODOTTI */
+.products-column {
+    width:200px;
+    background: rgba(255,255,255,0.85);
+    border-radius:20px;
+    padding:15px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.25);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+.products-column h3 {
+    color:#FF8000;
+    margin-bottom:15px;
+    text-align:center;
+}
+.products-list {
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+    max-height:400px;
+    overflow-y:auto;
+}
+.products-list a {
     display:block;
     padding:10px;
-    margin-bottom:10px;
     background:#ff6b00;
     color:white;
-    border-radius:10px;
     text-decoration:none;
-    font-weight:bold;
-    font-size:14px;
-    transition: background 0.3s;
+    border-radius:10px;
+    text-align:center;
+    transition:0.3s;
 }
+.products-list a:hover { background:#e65c00; }
 
-.productItem:hover { background:#e65c00; }
+/* COLONNA CALCOLATORE */
+.calculator-column {
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
 
 /* CONTENITORE CALCOLATORE */
 .app-container {
     position: relative;
-    z-index:1;
+    z-index: 1;
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(12px);
-    border-radius:25px;
-    width:100%;
-    max-width:450px;
-    padding:30px;
-    box-shadow:0 15px 35px rgba(0,0,0,0.25);
-    text-align:center;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    text-align: center;
 }
-
-/* TITOLI */
 h1 { margin-bottom:25px; color:#FF8000; font-size:28px; }
-
-/* INPUT E SELECT */
-input, select {
-    width:100%;
-    padding:12px;
-    margin:10px 0;
-    border-radius:12px;
-    border:1px solid #ccc;
-    font-size:16px;
-    transition:0.3s;
-}
-
-input:focus, select:focus {
-    border-color:#ff6b00;
-    outline:none;
-    box-shadow:0 0 8px rgba(255,107,0,0.5);
-}
-
-/* PULSANTI */
-button {
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    border:none;
-    border-radius:12px;
-    background:#ff6b00;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
+input, select { width:100%; padding:12px; margin:10px 0; border-radius:12px; border:1px solid #ccc; font-size:16px; transition:0.3s; }
+input:focus, select:focus { border-color:#ff6b00; outline:none; box-shadow:0 0 8px rgba(255,107,0,0.5); }
+button { width:100%; padding:12px; margin-top:10px; border:none; border-radius:12px; background:#ff6b00; color:white; font-size:18px; cursor:pointer; transition:0.3s; }
 button:hover { background:#e65c00; }
 #resetBtn { background:#d63031; }
 #resetBtn:hover { background:#b71c1c; }
 
 /* RISULTATI */
-.result {
-    margin-top:20px;
-    text-align:left;
-    opacity:0;
-    transform: translateY(20px);
-    transition: all 0.5s ease;
-}
-
-.result.show {
-    opacity:1;
-    transform: translateY(0);
-}
-
+.result { margin-top:20px; text-align:left; opacity:0; transform: translateY(20px); transition: all 0.5s ease; }
+.result.show { opacity:1; transform: translateY(0); }
 .highlight { font-weight:bold; color:#FF8000; }
 
 /* GRAFICI */
@@ -151,26 +120,26 @@ canvas.show-chart { max-height:400px; opacity:1; }
 #bmiInfo {
     display:none;
     position: fixed;
-    top:50%; left:50%;
-    transform: translate(-50%,-50%);
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(10px);
-    padding:25px;
-    border-radius:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.3);
-    z-index:10;
-    max-width:400px;
-    text-align:left;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 10;
+    max-width: 400px;
+    text-align: left;
 }
 #bmiInfo.show { display:block; animation: fadeIn 0.5s ease forwards; }
 #bmiInfo h2 { color:#FF8000; margin-bottom:15px; }
 #bmiInfo p { margin-bottom:10px; }
 #bmiInfo button { margin-top:15px; background:#ff6b00; color:white; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(-20px);} to { opacity:1; transform: translateY(0);} }
 
-@keyframes fadeIn { from {opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
-
-/* DONAZIONE */
-.donateBtn {
+/* PULSANTE DONAZIONE */
+.donate-btn {
     display:inline-block;
     width:100%;
     max-width:200px;
@@ -181,57 +150,53 @@ canvas.show-chart { max-height:400px; opacity:1; }
     font-weight:bold;
     border-radius:12px;
     text-decoration:none;
+    text-align:center;
     transition:0.3s;
-    margin-top:20px;
 }
-
-.donateBtn:hover { background:#e65c00; }
-
+.donate-btn:hover { background:#e65c00; }
 </style>
 </head>
 <body>
 
-<!-- VIDEO SFONDO -->
 <video autoplay muted loop id="bgVideo">
     <source src="VIDEOSFONDO.mp4" type="video/mp4">
-    Il tuo browser non supporta i video HTML5.
 </video>
 
-<!-- SIDEBAR AFFILIAZIONE -->
-<div id="productSidebar">
-    <h3>Prodotti Consigliati</h3>
-    <div class="productList">
-        <a href="https://amzn.to/4udHiYe" target="_blank" class="productItem">
-            Bilancia Smart Eufy – 29,99€
-        </a>
-        <a href="https://amzn.to/4rajwJE" target="_blank" class="productItem">
-            Fitness Tracker Xiaomi – 39,99€
-        </a>
+<div class="main-container">
+    <!-- BARRA PRODOTTI -->
+    <div class="products-column">
+        <h3>Prodotti Consigliati</h3>
+        <div class="products-list">
+            <a href="https://amzn.to/4udHiYe" target="_blank">Bilancia Smart – 29,99€</a>
+            <a href="https://amzn.to/4rajwJE" target="_blank">Fitness Tracker Xiaomi – 39,99€</a>
+            <!-- aggiungi altri prodotti qui -->
+        </div>
     </div>
-</div>
 
-<!-- CONTENITORE CALCOLATORE -->
-<div class="app-container">
-    <h1>Calcolatore BMI Pro</h1>
+    <!-- CALCOLATORE -->
+    <div class="calculator-column">
+        <div class="app-container">
+            <h1>Calcolatore BMI Pro</h1>
+            <input type="number" id="eta" placeholder="Età">
+            <select id="sesso">
+                <option value="male">Maschio</option>
+                <option value="female">Femmina</option>
+            </select>
+            <input type="number" id="altezza" placeholder="Altezza (cm)">
+            <input type="number" id="peso" placeholder="Peso (kg)">
+            <button onclick="calcolaBMI()">Calcola</button>
+            <button id="resetBtn" onclick="resetTutto()">Reset</button>
+            <button onclick="apriInfo()">Info BMI</button>
 
-    <input type="number" id="eta" placeholder="Età">
-    <select id="sesso">
-        <option value="male">Maschio</option>
-        <option value="female">Femmina</option>
-    </select>
-    <input type="number" id="altezza" placeholder="Altezza (cm)">
-    <input type="number" id="peso" placeholder="Peso (kg)">
+            <div class="result" id="risultato"></div>
+            <canvas id="bmiChart" width="300" height="300"></canvas>
+            <canvas id="historyChart" class="history-chart" width="400" height="200"></canvas>
 
-    <button onclick="calcolaBMI()">Calcola</button>
-    <button id="resetBtn" onclick="resetTutto()">Reset</button>
-    <button onclick="apriInfo()">Info BMI</button>
-
-    <div class="result" id="risultato"></div>
-    <canvas id="bmiChart" width="300" height="300"></canvas>
-    <canvas id="historyChart" class="history-chart" width="400" height="200"></canvas>
-
-    <!-- PULSANTE DONAZIONE -->
-    <a href="https://revolut.me/fraaaaa05" target="_blank" class="donateBtn">Donami</a>
+            <div style="margin-top:25px; text-align:center;">
+                <a href="https://revolut.me/fraaaaa05" target="_blank" class="donate-btn">Donami</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- POPUP INFO BMI -->
@@ -245,7 +210,7 @@ canvas.show-chart { max-height:400px; opacity:1; }
 </div>
 
 <script>
-// SCRIPT CALCOLO BMI (uguale al tuo)
+// CODICE JS CALCOLATORE (uguale al tuo)
 let chart, historyChart;
 let bmiHistory = [];
 const video = document.getElementById('bgVideo');
@@ -256,24 +221,34 @@ function calcolaBMI() {
     const sesso = document.getElementById('sesso').value;
     const altezzaM = parseFloat(document.getElementById('altezza').value)/100;
     const peso = parseFloat(document.getElementById('peso').value);
+
     if (!eta || !altezzaM || !peso) { alert("Inserisci tutti i dati!"); return; }
 
     const bmi = (peso / (altezzaM*altezzaM)).toFixed(1);
-    let massaGrassa = sesso==='male' ? ((1.20*bmi)+(0.23*eta)-16.2).toFixed(1) : ((1.20*bmi)+(0.23*eta)-5.4).toFixed(1);
+    let massaGrassa;
+    if (sesso==='male') massaGrassa = ((1.20*bmi)+(0.23*eta)-16.2).toFixed(1);
+    else massaGrassa = ((1.20*bmi)+(0.23*eta)-5.4).toFixed(1);
     const massaMagra = (peso - massaGrassa).toFixed(1);
     const pesoIdeale = (22*altezzaM*altezzaM).toFixed(1);
     const chiliDaPerdere = (peso-pesoIdeale).toFixed(1);
 
-    let categoria='', colore='', consigli='';
-    if(bmi<18.5){categoria='Sottopeso'; colore='#74b9ff'; consigli='Mangia più calorie e proteine, attività fisica moderata';}
-    else if(bmi<25){categoria='Normopeso'; colore='#55efc4'; consigli='Mantieni il peso e attività fisica regolare';}
-    else if(bmi<30){categoria='Sovrappeso'; colore='#ffeaa7'; consigli='Riduci calorie, aumenta attività cardio e forza';}
-    else{categoria='Obesità'; colore='#fab1a0'; consigli='Consulta un professionista, dieta e attività fisica costante';}
+    let categoria='', colore='';
+    if(bmi<18.5){categoria='Sottopeso'; colore='#74b9ff';}
+    else if(bmi<25){categoria='Normopeso'; colore='#55efc4';}
+    else if(bmi<30){categoria='Sovrappeso'; colore='#ffeaa7';}
+    else{categoria='Obesità'; colore='#fab1a0';}
+
+    let consigli='';
+    if(bmi<18.5) consigli='Mangia più calorie e proteine, attività fisica moderata';
+    else if(bmi<25) consigli='Mantieni il peso e attività fisica regolare';
+    else if(bmi<30) consigli='Riduci calorie, aumenta attività cardio e forza';
+    else consigli='Consulta un professionista, dieta e attività fisica costante';
 
     const risultato = document.getElementById('risultato');
     animateValue(risultato, peso, pesoIdeale, bmi, massaGrassa, massaMagra, chiliDaPerdere, categoria, consigli);
-    bmiHistory.push({data:new Date().toLocaleTimeString(), bmi:parseFloat(bmi)});
 
+    const oggi = new Date().toLocaleTimeString();
+    bmiHistory.push({data:oggi, bmi:parseFloat(bmi)});
     const canvas = document.getElementById('bmiChart');
     if(!canvas.classList.contains('show-chart')) canvas.classList.add('show-chart');
     creaDoughnutChart(bmi, colore);
@@ -283,20 +258,25 @@ function calcolaBMI() {
     creaHistoryChart();
 }
 
-function animateValue(container, peso, pesoIdeale, bmi, massaG, massaM, chili, categoria, consigli){
+function animateValue(container, peso, pesoIdeale, bmi, massaG, massaM, chili, categoria, consigli) {
     container.classList.add('show');
-    container.innerHTML='';
-    let steps=50, i=0;
-    let interval=setInterval(()=>{
+    container.innerHTML = '';
+    let steps = 50;
+    let i=0;
+    let interval = setInterval(()=>{
         i++;
         let perc = i/steps;
-        container.innerHTML=`
-            <p>BMI: <span class="highlight">${(bmi*perc).toFixed(1)}</span></p>
+        let bmiStep = (bmi*perc).toFixed(1);
+        let massaGStep = (massaG*perc).toFixed(1);
+        let massaMStep = (massaM*perc).toFixed(1);
+        let chiliStep = (chili*perc).toFixed(1);
+        container.innerHTML = `
+            <p>BMI: <span class="highlight">${bmiStep}</span></p>
             <p>Categoria: <span class="highlight">${categoria}</span></p>
-            <p>Massa grassa stimata: <span class="highlight">${(massaG*perc).toFixed(1)} kg</span></p>
-            <p>Massa magra stimata: <span class="highlight">${(massaM*perc).toFixed(1)} kg</span></p>
+            <p>Massa grassa stimata: <span class="highlight">${massaGStep} kg</span></p>
+            <p>Massa magra stimata: <span class="highlight">${massaMStep} kg</span></p>
             <p>Peso forma (BMI 22): <span class="highlight">${pesoIdeale} kg</span></p>
-            <p>Chili da perdere: <span class="highlight">${(chili*perc>0? (chili*perc).toFixed(1) : 0)} kg</span></p>
+            <p>Chili da perdere: <span class="highlight">${chiliStep>0?chiliStep:0} kg</span></p>
             <p>Consigli: <span class="highlight">${consigli}</span></p>
         `;
         if(i>=steps) clearInterval(interval);
@@ -304,31 +284,26 @@ function animateValue(container, peso, pesoIdeale, bmi, massaG, massaM, chili, c
 }
 
 function creaDoughnutChart(bmi,colore){
-    const ctx=document.getElementById('bmiChart').getContext('2d');
+    const ctx = document.getElementById('bmiChart').getContext('2d');
     if(chart) chart.destroy();
-    chart=new Chart(ctx,{
+    chart = new Chart(ctx,{
         type:'doughnut',
         data:{
             labels:['BMI Attuale','Normale','Sovrappeso','Obeso'],
-            datasets:[{
-                label:'BMI',
-                data:[bmi,25-bmi<0?0:25-bmi,30-25,40-30],
-                backgroundColor:[colore,'#55efc4','#ffeaa7','#fab1a0'],
-                borderWidth:1
-            }]
+            datasets:[{label:'BMI',data:[bmi,25-bmi<0?0:25-bmi,30-25,40-30],backgroundColor:[colore,'#55efc4','#ffeaa7','#fab1a0'],borderWidth:1}]
         },
         options:{plugins:{legend:{display:true}},animation:{animateScale:true, animateRotate:true}}
     });
 }
 
 function creaHistoryChart(){
-    const ctx=document.getElementById('historyChart').getContext('2d');
+    const ctx = document.getElementById('historyChart').getContext('2d');
     if(historyChart) historyChart.destroy();
-    const labels=bmiHistory.map(e=>e.data);
-    const data=bmiHistory.map(e=>e.bmi);
-    historyChart=new Chart(ctx,{
+    const labels = bmiHistory.map(e=>e.data);
+    const data = bmiHistory.map(e=>e.bmi);
+    historyChart = new Chart(ctx,{
         type:'line',
-        data:{labels,datasets:[{label:'BMI Storico',data,fill:false,borderColor:'#FF8000',tension:0.2}]},
+        data:{labels, datasets:[{label:'BMI Storico',data,fill:false,borderColor:'#FF8000',tension:0.2}]},
         options:{plugins:{legend:{display:true}},scales:{y:{min:10,max:40}}}
     });
 }
@@ -337,11 +312,12 @@ function resetTutto(){
     document.getElementById('eta').value='';
     document.getElementById('altezza').value='';
     document.getElementById('peso').value='';
-    const risultato=document.getElementById('risultato');
-    risultato.classList.remove('show'); risultato.innerHTML='';
-    const canvas=document.getElementById('bmiChart');
+    const risultato = document.getElementById('risultato');
+    risultato.classList.remove('show');
+    risultato.innerHTML='';
+    const canvas = document.getElementById('bmiChart');
     canvas.classList.remove('show-chart');
-    const histCanvas=document.getElementById('historyChart');
+    const histCanvas = document.getElementById('historyChart');
     histCanvas.classList.remove('show-history');
     if(chart) chart.destroy();
     if(historyChart) historyChart.destroy();
@@ -351,5 +327,6 @@ function resetTutto(){
 function apriInfo(){ document.getElementById('bmiInfo').classList.add('show'); }
 function chiudiInfo(){ document.getElementById('bmiInfo').classList.remove('show'); }
 </script>
+
 </body>
 </html>
